@@ -7,14 +7,15 @@ import sys
 
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('-cp','--csvPath',type=str,default='tweets_open.csv',
-                    help='path to tweet_open.csv')
+parser.add_argument('-cp','--csvPath',type=str,default='DATA/tweets_open.csv', help='path to tweet_open.csv')
+parser.add_argument('--save_pickle_path', default='DATA/twitterJSA_data.pickle')
+parser.add_argument('--save_json_path', default='DATA/twitterJSA_data.json')
 args = parser.parse_args()
 
-CK = 'PuljIrpIWCnWTXEDbb6sRyanP' # Consumer Key
-CS = 'HkaifUlQQloFN7GPdxJGBRd0GqHy6gc2JYo7O9f6cPLViu1kpR' # Consumer Secret
-AT = '976641317718540288-5UhXMuUgrCwtzzLlPCA3OqVpBzu8415' # Access Token
-AS = 'ybsmfJ9IkS5DB9GUyS9iG8h2NGgqd67sXc51e56UHV7bx' # Accesss Token Secert
+CK = '****' # Consumer Key
+CS = '****' # Consumer Secret
+AT = '****' # Access Token
+AS = '****' # Accesss Token Secert
  
 session = OAuth1Session(CK, CS, AT, AS)
  
@@ -52,7 +53,7 @@ def extruct():
 
         # sleep
         sleep(1)
-    pickle.dump(alldata, open('twitterJSA_data.pickle','wb'))
-    json.dump(alldata, open('twitterJSA_data.json','w'))
+    pickle.dump(alldata, open(args.save_pickle_path,'wb'))
+    json.dump(alldata, open(args.save_json_path,'w'))
 
 extruct()
