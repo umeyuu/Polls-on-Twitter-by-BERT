@@ -102,8 +102,7 @@ def main(args):
         val_loss = ft.validation()
         wandb.log({'epoch':epoch, 'train_loss':train_loss, 'val_loss':val_loss})
         print(f'epoch {epoch}')
-
-        # if epoch % 10 == 0:
+        
         torch.save(ft.model.state_dict(), args.save_path + f'epoch={epoch}.pth')
 
 if __name__ == '__main__':
@@ -118,6 +117,10 @@ if __name__ == '__main__':
     parser.add_argument('--epoch', type=int, default=10)
     parser.add_argument('--save_path', default='../save_model/')
     args = parser.parse_args()
+
+    # モデルの保存先がないなら作成する。
+    if ~os.path.isdir(args.save_path):
+        os.makedirs(args.save_path)
     
     main(args)
 
