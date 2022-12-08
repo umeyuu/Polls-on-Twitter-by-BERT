@@ -4,19 +4,22 @@ from torch.utils.data import random_split
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from transformers import BertForSequenceClassification, AdamW, BertConfig
 import argparse
+import pandas as pd
+import numpy as np
 import os
 
 import wandb
 
 class FT_BERT():
     def __init__(self, model, device, train_loder, val_loder, optimizer):
-        self.model = model.to(device)
+        self.model = model
         self.device = device
         self.train_loder = train_loder
         self.val_loder = val_loder
         self.optimizer = optimizer
 
     def train(self):
+        self.model = self.model.to(self.device)
         self.model.train()
         train_loss = 0
         for i, (input_ids, input_mask, labels) in enumerate(self.train_loder):
@@ -39,20 +42,45 @@ class FT_BERT():
         return train_loss / (i+1)
 
     def validation(self):
+        self.model = self.model.to(self.device)
         self.model.eval()
         val_loss = 0
+        self.logits = []
+        self.labels= []
         with torch.no_grad():
-            for i, (input_ids, input_mask, labels) in enumerate(self.val_loder):
+            for i, (input_ids, input_mask, label) in enumerate(self.val_loder):
                 input_ids = input_ids.to(self.device)
                 input_mask = input_mask.to(self.device)
-                labels = labels.to(self.device)
+                label = label.to(self.device)
                 output = self.model(input_ids,
                                 token_type_ids=None, 
                                 attention_mask=input_mask,
-                                labels=labels)
+                                labels=label)
                 loss = output.loss
                 val_loss += loss.item()
+                # 予測値とラベルを保存
+                logit = output.logits.cpu().numpy().tolist()
+                label = label.cpu().numpy().tolist()
+                self.logits.extend(logit)
+                self.labels.extend(label)
+
         return val_loss / (i+1)
+
+    def accuracy(self):
+        df = pd.DataFrame(self.logits, columns=['pos_logit', 'neg_logit', 'neu_logit'])
+        pred = df.apply(self.get_label, axis=1).values
+        true = np.array(self.labels)
+        acc = 0
+        for i, (p, t) in enumerate(zip(pred, true)):
+            if p==t:
+                acc += 1
+        return acc / (i+1)
+
+    def get_label(self, df):
+        logit = np.array([df.pos_logit, df.neg_logit, df.neu_logit])
+        label = np.argmax(logit)
+        return label
+
 
 def main(args):
     os.environ["CUDA_VISIBLE_DEVICES"] = args.CUDA_VISIBLE_DEVICES
@@ -79,7 +107,7 @@ def main(args):
     validation_dataloader = DataLoader(
                 val_dataset, 
                 sampler = SequentialSampler(val_dataset), # 順番にデータを取得してバッチ化
-                batch_size = args.batch_size
+                batch_size = 32
             )
 
     # BertForSequenceClassification 
@@ -100,10 +128,12 @@ def main(args):
     for epoch in range(args.epoch):
         train_loss = ft.train()
         val_loss = ft.validation()
-        wandb.log({'epoch':epoch, 'train_loss':train_loss, 'val_loss':val_loss})
+        acc = ft.accuracy()
+
+        wandb.log({'epoch':epoch, 'train_loss':train_loss, 'val_loss':val_loss, 'accuracy':acc})
         print(f'epoch {epoch}')
         
-        torch.save(ft.model.state_dict(), args.save_path + f'epoch={epoch}.pth')
+        torch.save(ft.model.to('cpu').state_dict(), args.save_path + f'epoch={epoch}.pth')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
