@@ -47,7 +47,7 @@ class GET_RAW_DATA(Dataset):
         return df
     
     def slice_df(self, df):
-        df_pos = df[(df.pos==1) & (df.neg==0)]
+        df_pos = df[(df.pos==1) & (df.neg==0) & (df.neu==0)]
         df_neg = df[(df.pos==0) & (df.neg==1) & (df.neu==0)]
         df_neu = df[(df.pos==0) & (df.neg==0) & (df.neu==1)]
         df_dict = {'pos':df_pos, 'neg':df_neg, 'neu':df_neu}

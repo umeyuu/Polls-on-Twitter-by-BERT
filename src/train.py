@@ -119,7 +119,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # モデルの保存先がないなら作成する。
-    if ~os.path.isdir(args.save_path):
+    if not os.path.isdir(args.save_path):
         os.makedirs(args.save_path)
     
     main(args)
