@@ -24,7 +24,7 @@ def show_pi(pred, serch_word, save_result):
         label.append(k)
         count.append(v)
     plt.pie(count, labels=label, autopct='%.1f%%')
-    plt.title(f'amount od data is {sum(count)}')
+    plt.title(f'Amount of Data is {sum(count)}')
     plt.savefig(f'{save_result}result_of_{serch_word}.png')
 
 
@@ -85,9 +85,9 @@ if __name__ == '__main__':
     parser.add_argument('--CUDA_VISIBLE_DEVICES', default='MIG-4bc08680-2516-5102-acd7-f4ce7f6e56e9')
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--model_path', default='save_model/best_model.pth')
-    parser.add_argument('--serch_word', default='イーロンマスク')
-    parser.add_argument('--min_faves', type=int, default=100)
-    parser.add_argument('--num_tweet', type=int, default=150)
+    parser.add_argument('--serch_word', default='サッカー　W杯', help='検索ワード')
+    parser.add_argument('--min_faves', type=int, default=100, help='何いいね以上のツイートを取得するか')
+    parser.add_argument('--num_tweet', type=int, default=150, help='何ツイート取得するか')
     parser.add_argument('--savedir', default='DATA/serched_tweet/')
     parser.add_argument('--save_result', default='Result/')
     args = parser.parse_args()
