@@ -127,7 +127,7 @@ def main(args):
     ft = FT_BERT(model, args.device, train_dataloader, validation_dataloader, optimizer)
 
     print('-------------------------------------------------------------')
-    print('train sart')
+    print('train start')
 
     for epoch in range(args.epoch):
         train_loss = ft.train()
