@@ -4,8 +4,9 @@ Twitterであるテーマについての意見を集計し、ネガポジ判定�
 ネガポジ判定モデルはBERTをファインチューニングしたモデルを使用。
 
 
-
-
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/91179464/206850285-1d5e43f8-d9fe-4fd6-bef9-2f40646478e6.png" width="520px">
+</p>
 
 ## Setup
 Twitter APIを使用するために申請が必要。
