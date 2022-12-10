@@ -90,24 +90,23 @@ def main(args):
     grd = GET_RAW_DATA(args.data_path)
     sentence = grd.sentence
     label = grd.label
-    dataset = My_DATASET(sentence, label, args.MODEL_NAME)
+    dataset = My_DATASET(args.MODEL_NAME, sentence, label)
     
     # データセットを分割
     train_size = int(args.rate_train_val * len(dataset))
     val_size = len(dataset) - train_size
     train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
-    # 訓練データローダー
+    # データローダー
     train_dataloader = DataLoader(
                 train_dataset,  
                 sampler = RandomSampler(train_dataset), # ランダムにデータを取得してバッチ化
                 batch_size = args.batch_size
             )
-    # 検証データローダー
     validation_dataloader = DataLoader(
                 val_dataset, 
                 sampler = SequentialSampler(val_dataset), # 順番にデータを取得してバッチ化
-                batch_size = 32
+                batch_size = 1
             )
 
     # BertForSequenceClassification 

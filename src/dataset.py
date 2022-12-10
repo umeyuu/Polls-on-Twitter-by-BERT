@@ -63,7 +63,7 @@ class GET_RAW_DATA(Dataset):
         return sentence, label
 
 class My_DATASET(Dataset):
-    def __init__(self, sentence, label, model_name):
+    def __init__(self, model_name, sentence, label=None):
         super().__init__()
         self.tokenizer = BertJapaneseTokenizer.from_pretrained(model_name)
         # 文章の最大の単語数
@@ -72,10 +72,13 @@ class My_DATASET(Dataset):
         self.input_ids, self.attention_masks, self.labels = self.get_token_id(sentence, label)
     
     def __len__(self):
-        return len(self.labels)
+        return len(self.input_ids)
 
     def __getitem__(self, index):
-        return self.input_ids[index], self.attention_masks[index], self.labels[index]
+        if self.labels == None:
+            return self.input_ids[index], self.attention_masks[index]
+        else:
+            return self.input_ids[index], self.attention_masks[index], self.labels[index]
 
     def check_maxlen(self, sentence):
         max_len = []
@@ -111,9 +114,14 @@ class My_DATASET(Dataset):
         input_ids = torch.cat(input_ids, dim=0)
         attention_masks = torch.cat(attention_masks, dim=0)
 
-        labels = torch.tensor(label)
+        if label != None:
+            labels = torch.tensor(label)
+            return input_ids, attention_masks, labels
+        else:
+            return input_ids, attention_masks, label
 
-        return input_ids, attention_masks, labels
+
+        
 
 
 
