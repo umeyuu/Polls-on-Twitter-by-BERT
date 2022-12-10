@@ -1,11 +1,11 @@
 import pandas as pd
 import random
-import numpy as np
 import torch
 from torch.utils.data import Dataset
 from transformers import BertJapaneseTokenizer
 
-class GET_RAW_DATA(Dataset):
+# pickleファイルから、学習に用いるデータをサンプリングするクラス
+class GET_RAW_DATA():
     def __init__(self, path):
         super().__init__()
         df = self.load_pickle(path)
@@ -16,13 +16,14 @@ class GET_RAW_DATA(Dataset):
         df_dict = self.slice_df(df)
         self.length = len(df_dict['pos'])
 
-        self.sentence = []
-        self.label = []
+        self.sentence = [] # ツイート文章
+        self.label = [] # pos, neg, neuのラベル
         for mode, df in df_dict.items():
             sent, la = self.extract_text_label(df, mode)
             self.sentence.extend(sent)
             self.label.extend(la)
-
+    
+    # pickleファイルを読み込む
     def load_pickle(self, path):
         data = pd.read_pickle(path)
         df = pd.DataFrame(data)
@@ -40,12 +41,15 @@ class GET_RAW_DATA(Dataset):
             print('select mode')
         return id
     
+    # 新しい列を作成
     def make_label_row(self, df, mode):
         id = self.get_mode_id(mode)
         label_func = lambda x: 1 if x[id+1]==1 else 0
         df[mode] = df.label.apply(label_func)
         return df
     
+    # 完全にpositive, negative, neutralのデータを取得。
+    # たまにpositiveかつnegativeのデータがある
     def slice_df(self, df):
         df_pos = df[(df.pos==1) & (df.neg==0) & (df.neu==0)]
         df_neg = df[(df.pos==0) & (df.neg==1) & (df.neu==0)]
@@ -53,6 +57,7 @@ class GET_RAW_DATA(Dataset):
         df_dict = {'pos':df_pos, 'neg':df_neg, 'neu':df_neu}
         return df_dict
 
+    # pos, neg, neuを均衡にする
     def extract_text_label(self, df, mode):
         sentence = df.text.values.tolist()
         id = self.get_mode_id(mode)
@@ -62,6 +67,8 @@ class GET_RAW_DATA(Dataset):
 
         return sentence, label
 
+
+# 学習データセット
 class My_DATASET(Dataset):
     def __init__(self, model_name, sentence, label=None):
         super().__init__()
@@ -85,7 +92,6 @@ class My_DATASET(Dataset):
         for sent in sentence:
             # Tokenizeで分割
             token_words = self.tokenizer.tokenize(sent)
-            # 文章数を取得してリストへ格納
             max_len.append(len(token_words))
 
         return max(max_len)+2
@@ -110,7 +116,6 @@ class My_DATASET(Dataset):
             # Attention　maskの取得
             attention_masks.append(encoded_dict['attention_mask'])
 
-        # リストに入ったtensorを縦方向（dim=0）へ結合
         input_ids = torch.cat(input_ids, dim=0)
         attention_masks = torch.cat(attention_masks, dim=0)
 

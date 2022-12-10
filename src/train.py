@@ -2,7 +2,7 @@ from dataset import GET_RAW_DATA, My_DATASET
 import torch
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
-from transformers import BertForSequenceClassification, AdamW, BertConfig
+from transformers import BertForSequenceClassification, AdamW
 import argparse
 import pandas as pd
 import numpy as np
@@ -10,6 +10,7 @@ import os
 
 import wandb
 
+# ファインチューニングをするクラス
 class FT_BERT():
     def __init__(self, model, device, train_loder, val_loder, optimizer):
         self.model = model
@@ -18,6 +19,7 @@ class FT_BERT():
         self.val_loder = val_loder
         self.optimizer = optimizer
 
+    # ファインチューニング
     def train(self):
         self.model = self.model.to(self.device)
         self.model.train()
@@ -41,6 +43,7 @@ class FT_BERT():
             # print(f'step {i}')
         return train_loss / (i+1)
 
+    # バリエーション
     def validation(self):
         self.model = self.model.to(self.device)
         self.model.eval()
@@ -66,6 +69,7 @@ class FT_BERT():
 
         return val_loss / (i+1)
 
+    # バリエーションでの精度を算出
     def accuracy(self):
         df = pd.DataFrame(self.logits, columns=['pos_logit', 'neg_logit', 'neu_logit'])
         pred = df.apply(self.get_label, axis=1).values
@@ -80,6 +84,7 @@ class FT_BERT():
         logit = np.array([df.pos_logit, df.neg_logit, df.neu_logit])
         label = np.argmax(logit)
         return label
+
 
 
 def main(args):
@@ -112,7 +117,7 @@ def main(args):
     # BertForSequenceClassification 
     model = BertForSequenceClassification.from_pretrained(
         args.MODEL_NAME, # 日本語Pre trainedモデルの指定
-        num_labels = 3, # ラベル数（今回はBinayなので2、数値を増やせばマルチラベルも対応可）
+        num_labels = 3, # ラベル数
         output_attentions = False, # アテンションベクトルを出力するか
         output_hidden_states = False, # 隠れ層を出力するか
     )

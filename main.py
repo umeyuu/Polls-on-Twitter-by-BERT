@@ -34,7 +34,7 @@ def main(args):
     # モデルを読み込む
     model = BertForSequenceClassification.from_pretrained(
             args.MODEL_NAME, # 日本語Pre trainedモデルの指定
-            num_labels = 3, # ラベル数（今回はBinayなので2、数値を増やせばマルチラベルも対応可）
+            num_labels = 3, # ラベル数
             output_attentions = False, # アテンションベクトルを出力するか
             output_hidden_states = False, # 隠れ層を出力するか
         )

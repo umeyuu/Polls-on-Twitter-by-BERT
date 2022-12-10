@@ -1,4 +1,5 @@
 from requests_oauthlib import OAuth1Session
+from setting import *
 import json
 import itertools
 import pickle
@@ -6,20 +7,7 @@ from time import sleep
 import sys
 
 import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('-cp','--csvPath',type=str,default='DATA/tweets_open.csv', help='path to tweet_open.csv')
-parser.add_argument('--save_pickle_path', default='DATA/twitterJSA_data.pickle')
-parser.add_argument('--save_json_path', default='DATA/twitterJSA_data.json')
-args = parser.parse_args()
 
-CK = '****' # Consumer Key
-CS = '****' # Consumer Secret
-AT = '****' # Access Token
-AS = '****' # Accesss Token Secert
- 
-session = OAuth1Session(CK, CS, AT, AS)
- 
-url = 'https://api.twitter.com/1.1/statuses/lookup.json'
 
 def getTweets(tweetIds):
     tweetIds = ','.join(list(map(str,tweetIds)))
@@ -33,7 +21,7 @@ def getTweets(tweetIds):
     data = {rt['id']:rt['text'] for rt in resText}
     return data
 
-def extruct():
+def extruct(args):
     anno = [list(map(int, line.strip().split(','))) for line in open(args.csvPath)]
     alldata = []
 
@@ -56,4 +44,13 @@ def extruct():
     pickle.dump(alldata, open(args.save_pickle_path,'wb'))
     json.dump(alldata, open(args.save_json_path,'w'))
 
-extruct()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-cp','--csvPath',type=str,default='DATA/tweets_open.csv', help='path to tweet_open.csv')
+    parser.add_argument('--save_pickle_path', default='DATA/twitterJSA_data.pickle')
+    parser.add_argument('--save_json_path', default='DATA/twitterJSA_data.json')
+    args = parser.parse_args()
+    session = OAuth1Session(CK, CS, AT, AS)
+    url = 'https://api.twitter.com/1.1/statuses/lookup.json'
+    
+    extruct(args)

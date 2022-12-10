@@ -1,6 +1,5 @@
 
-CONSUMER_KEY = '****'
-CONSUMER_SECRET = '****'
-BEARER_TOKEN = '****'
-ACCESS_TOKEN_KEY = '****'
-ACCESS_TOKEN_SECRET = '****'
+CK = '****' # Consumer Key
+CS = '****' # Consumer Secret
+AT = '****' # Access Token
+AS = '****' # Accesss Token Secert
