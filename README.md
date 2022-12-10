@@ -3,9 +3,11 @@ Twitterであるテーマについての意見を集計し、ネガポジ判定�
 
 ネガポジ判定モデルはBERTをファインチューニングしたモデルを使用。
 
+以下の図はファインチューニングして、`python main.py`を実行した具体例。
+
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/91179464/206850285-1d5e43f8-d9fe-4fd6-bef9-2f40646478e6.png" width="520px">
+    <img src="https://user-images.githubusercontent.com/91179464/206850976-70c34197-e3ec-4a6e-9d18-973a69dfc0ca.png" width="520px">
 </p>
 
 ## Setup
