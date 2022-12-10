@@ -16,6 +16,7 @@ def id2label(id):
     elif id == 2:
         return 'neu'
 
+# 円グラフを作成する
 def show_pi(pred, serch_word, save_result):
     label = []
     count = []
@@ -28,25 +29,24 @@ def show_pi(pred, serch_word, save_result):
 
 
 def main(args):
-
     os.environ["CUDA_VISIBLE_DEVICES"] = args.CUDA_VISIBLE_DEVICES
 
+    # モデルを読み込む
     model = BertForSequenceClassification.from_pretrained(
             args.MODEL_NAME, # 日本語Pre trainedモデルの指定
             num_labels = 3, # ラベル数（今回はBinayなので2、数値を増やせばマルチラベルも対応可）
             output_attentions = False, # アテンションベクトルを出力するか
             output_hidden_states = False, # 隠れ層を出力するか
         )
-
     model.load_state_dict(torch.load(args.model_path))
 
-    # 検索ワードのデータがないなら、APIでとってくる
-    if os.path.isfile(args.savedir+args.serch_word+'.csv'):
+    # APIで検索ワードを含むツイートを取得する
+    if not os.path.isfile(args.savedir+args.serch_word+'.csv'):
+        tweets = get_tweets(args.serch_word, args.min_faves, args.num_tweet, args.savedir)
+    else:
         df = pd.read_csv(args.savedir+args.serch_word+'.csv')
         df.columns = ['tweet']
         tweets = df.tweet.values.tolist()
-    else:
-        tweets = get_tweets(args.serch_word, args.min_faves, args.num_tweet, args.savedir)
 
     # データローダー
     dataset = My_DATASET(args.MODEL_NAME, tweets)
@@ -59,6 +59,7 @@ def main(args):
 
     pred = {'pos':0, 'neg':0, 'neu':0}
 
+    # Titterで取得したデータをモデルで推論する
     for input_ids, input_mask in tweet_loader:
         input_ids = input_ids.to(args.device)
         input_mask = input_mask.to(args.device)
@@ -71,6 +72,7 @@ def main(args):
         pred_label = id2label(pred_id)
         pred[pred_label] += 1
 
+    # 推論結果を円グラフで表示する
     show_pi(pred, args.serch_word, args.save_result)
 
     
@@ -90,9 +92,10 @@ if __name__ == '__main__':
     parser.add_argument('--save_result', default='Result/')
     args = parser.parse_args()
 
-    # モデルの保存先がないなら作成する。
+    # ツイートの保存先がないなら作成する。
     if not os.path.isdir(args.savedir):
         os.makedirs(args.savedir)
+    # 結果の保存先がないなら作成する。
     if not os.path.isdir(args.save_result):
         os.makedirs(args.save_result)
     
