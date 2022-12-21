@@ -10,6 +10,11 @@ Twitterであるテーマについての意見を集計し、ネガポジ判定�
     <img src="https://user-images.githubusercontent.com/91179464/206850976-70c34197-e3ec-4a6e-9d18-973a69dfc0ca.png" width="520px">
 </p>
 
+また、なぜそのような推論をしたかの分析を`visualization.ipynb`で行うことができる。
+
+![スクリーンショット 2022-12-21 23 20 41](https://user-images.githubusercontent.com/91179464/208927316-0d9da5bb-1533-4d3f-b42d-d38cfeac7b2d.png)
+
+
 ## Setup
 Twitter APIを使用するために申請が必要。
 
