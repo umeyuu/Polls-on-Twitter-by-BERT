@@ -7,7 +7,7 @@ Twitterであるテーマについての意見を集計し、ネガポジ判定�
 
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/91179464/206850976-70c34197-e3ec-4a6e-9d18-973a69dfc0ca.png" width="520px">
+    <img src="https://user-images.githubusercontent.com/91179464/208930848-900c2ff3-4bf0-421b-979f-acfcb2304e92.png" width="520px">
 </p>
 
 また、なぜそのような推論をしたかの分析を`visualization.ipynb`で行うことができる。
