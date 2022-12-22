@@ -21,6 +21,7 @@ def get_tweets(serch_word, min_faves, num_tweet, savedir):
     text = []
     for tweet in tweets:
         t = tweet.full_text
+        # リンクがあるツイートを除外（ノイズになると思われるため）
         if 'https://' in t:
             continue
         text.append(t)
