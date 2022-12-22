@@ -20,7 +20,10 @@ def get_tweets(serch_word, min_faves, num_tweet, savedir):
 
     text = []
     for tweet in tweets:
-        text.append(tweet.full_text)
+        t = tweet.full_text
+        if 'https://' in t:
+            continue
+        text.append(t)
     
     # csvでツイートを保存
     pd.Series(text).to_csv(f'{savedir}{serch_word}.csv', index=False)
