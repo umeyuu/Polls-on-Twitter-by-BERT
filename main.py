@@ -58,9 +58,9 @@ def main(args):
     model = model.to(args.device)
 
     pred = {'pos':0, 'neg':0, 'neu':0}
-
+    result = {'pos':[], 'neg':[], 'neu':[]}
     # Titterで取得したデータをモデルで推論する
-    for input_ids, input_mask in tweet_loader:
+    for i, (input_ids, input_mask) in enumerate(tweet_loader):
         input_ids = input_ids.to(args.device)
         input_mask = input_mask.to(args.device)
 
@@ -71,9 +71,11 @@ def main(args):
         pred_id = output.logits.argmax(dim=1).item()
         pred_label = id2label(pred_id)
         pred[pred_label] += 1
+        result[pred_label].append(i)
 
     # 推論結果を円グラフで表示する
     show_pi(pred, args.serch_word, args.save_result)
+    print(result)
 
     
 
@@ -85,8 +87,8 @@ if __name__ == '__main__':
     parser.add_argument('--CUDA_VISIBLE_DEVICES', default='MIG-4bc08680-2516-5102-acd7-f4ce7f6e56e9')
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--model_path', default='save_model/best_model.pth')
-    parser.add_argument('--serch_word', default='サッカー　W杯', help='検索ワード')
-    parser.add_argument('--min_faves', type=int, default=100, help='何いいね以上のツイートを取得するか')
+    parser.add_argument('--serch_word', default='イーロンマスク', help='検索ワード')
+    parser.add_argument('--min_faves', type=int, default=10, help='何いいね以上のツイートを取得するか')
     parser.add_argument('--num_tweet', type=int, default=150, help='何ツイート取得するか')
     parser.add_argument('--savedir', default='DATA/serched_tweet/')
     parser.add_argument('--save_result', default='Result/')
